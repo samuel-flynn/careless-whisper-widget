@@ -52,7 +52,7 @@ class OneTimeClickHandler implements ClickHandler {
 
             Integer currentlyPlayingSoundId = mediaPlayerProvider.getCurrentlyPlayingSoundId();
 
-            if (currentlyPlayingSoundId == null) {
+            if (currentlyPlayingSoundId != null && currentlyPlayingSoundId == CW_INTRO_SOUND_ID) {
                 return CW_ONE_TIME_SOUND_ID;
             } else {
                 return null;
