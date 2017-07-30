@@ -3,15 +3,26 @@ package com.flynnsam.carelesswhisperwidget.activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.flynnsam.carelesswhisperwidget.R;
+import com.flynnsam.carelesswhisperwidget.options.PlaybackType;
 import com.flynnsam.carelesswhisperwidget.provider.CarelessWhisperAppWidgetProvider;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
+
+    protected String selectedPlaybackOption = null;
+
+    protected SparseArray<PlaybackType> playbackTypeRadioOptions = new SparseArray<PlaybackType>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +31,28 @@ public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_careless_whisper_widget_configure);
 
         Button okButton = (Button) findViewById(R.id.okButton);
-
         okButton.setOnClickListener(new OkOnClickListener());
+
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.playback_option_radio_group);
+        radioGroup.setOnCheckedChangeListener(new PlaybackRadioCheckChangedListener());
+
+        boolean defaultOption = true;
+
+        for (PlaybackType playbackType : PlaybackType.values()) {
+
+            RadioButton playbackOption = new RadioButton(this);
+
+            playbackTypeRadioOptions.put(playbackOption.getId(), playbackType);
+            playbackOption.setText(getText(playbackType.getLabelResId()));
+
+
+            if (defaultOption) {
+                playbackOption.setSelected(true);
+                selectedPlaybackOption = playbackType.toString();
+            }
+
+            radioGroup.addView(playbackOption);
+        }
     }
 
     protected class OkOnClickListener implements View.OnClickListener {
@@ -29,25 +60,29 @@ public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            RadioButton maxVolumeCheckBox = (RadioButton) findViewById(R.id.playback_radio_loop);
+            Intent intent = getIntent();
+
+            int widgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+
+            String preferenceKey = getResources().getString(R.string.preference_playback_option) + String.valueOf(widgetId);
 
             getSharedPreferences(getResources().getString(R.string.preference_repo_name), MODE_PRIVATE)
                     .edit()
-                    .putString(CarelessWhisperAppWidgetProvider.MAX_VOLUME_PREFERENCE_KEY, maxVolumeCheckBox.isChecked())
-                    .commit();
+                    .putString(preferenceKey, selectedPlaybackOption)
+                    .apply();
 
-            Intent intent = getIntent();
-            Bundle extras = intent.getExtras();
-            int appWidgetId = -1;
-            if (extras != null) {
-                appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                        AppWidgetManager.INVALID_APPWIDGET_ID);
-            } else {
-                throw new IllegalStateException("Unable to get intent extras.");
-            }Intent result = new Intent();
-            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            Intent result = new Intent();
+            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
             setResult(RESULT_OK, result);
             finish();
+        }
+    }
+
+    protected class PlaybackRadioCheckChangedListener implements RadioGroup.OnCheckedChangeListener {
+
+        @Override
+        public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+            selectedPlaybackOption = playbackTypeRadioOptions.get(checkedId).toString();
         }
     }
 }

@@ -19,7 +19,7 @@ import com.flynnsam.carelesswhisperwidget.R;
  */
 public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
-    private static final String PLAY_ACTION = "com.flynnsam.carelesswhisperwidget.PlayAction";
+    private static final int PLAY_ACTION_RESOUCE = R.string.play_action;
 
     private static final int CW_INTRO_RESOURCE = R.raw.intro;
 
@@ -32,13 +32,16 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager widgetManager, int[] appWidgetIds) {
 
+        String playActionStr = getPlayActionStr(context);
+
         for (int widgetId : appWidgetIds) {
 
             int buttonID = R.id.airhornblaster;
             int layoutID = R.layout.widgetbutton;
 
             Intent playAirHornIntent = new Intent(context, this.getClass());
-            playAirHornIntent.setAction(PLAY_ACTION);
+            playAirHornIntent.setAction(playActionStr);
+            playAirHornIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
             PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, playAirHornIntent, 0);
 
             RemoteViews views = new RemoteViews(context.getPackageName(), layoutID);
@@ -50,16 +53,24 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
 
-        if (PLAY_ACTION.equals(intent.getAction())) {
-            handleMaxVolumePref(context);
+        super.onReceive(context, intent);
+        String playActionStr = getPlayActionStr(context);
+
+        int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            throw new RuntimeException("Unable to retrieve widget ID"); // TODO throw a more appropriate exception
+        }
+
+        if (playActionStr.equals(intent.getAction())) {
             synchronized (this) {
                 if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayerProvider();
                 }
             }
-            mediaPlayer.play(context);
+
+            // TODO pickup point for tomorrow: How do I play queue what I need, if necessary, interrupt otherwise
+            mediaPlayer.play(context, resourcesToPlay);
         }
     }
 
@@ -75,5 +86,9 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
             AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
         }
+    }
+
+    public static String getPlayActionStr(final Context context) {
+        return context.getResources().getString(PLAY_ACTION_RESOUCE);
     }
 }
