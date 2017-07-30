@@ -27,24 +27,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <RadioButton
-            android:id="@+id/playback_radio_one_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="@string/one_time_option_desc" />
-
-        <RadioButton
-            android:id="@+id/playback_radio_loop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="14dp"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="70dp"
-            android:layout_weight="1"
-            android:text="@string/loop_option_desc" />
-
     </RadioGroup>
 
     <Button
@@ -53,7 +35,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/okButton"
         android:layout_below="@+id/playback_option_radio_group"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

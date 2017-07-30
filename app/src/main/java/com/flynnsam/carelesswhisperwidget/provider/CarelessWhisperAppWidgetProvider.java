@@ -5,29 +5,31 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioManager;
 import android.widget.RemoteViews;
 
-import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 import com.flynnsam.carelesswhisperwidget.R;
+import com.flynnsam.carelesswhisperwidget.clickhandler.ClickHandler;
+import com.flynnsam.carelesswhisperwidget.clickhandler.ClickHandlerFactory;
+import com.flynnsam.carelesswhisperwidget.options.PlaybackType;
+import com.flynnsam.carelesswhisperwidget.preferences.PreferencesManager;
+import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 
 /**
  * The widget provider that registers the button's action and handles that action's reception.
- *
+ * <p>
  * Created by Sam on 2017-01-20.
  */
 public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
     private static final int PLAY_ACTION_RESOUCE = R.string.play_action;
 
-    private static final int CW_INTRO_RESOURCE = R.raw.intro;
+    private static final ClickHandlerFactory clickHandlerFactory = new ClickHandlerFactory();
 
-    private static final int CW_LOOP_RESOURCE = R.raw.loop;
+    private MediaPlayerProvider mediaPlayer = null;
 
-    private static final int CW_OUTRO_RESOURCE = R.raw.outro;
-
-    public MediaPlayerProvider mediaPlayer = null;
+    private static String getPlayActionStr(final Context context) {
+        return context.getResources().getString(PLAY_ACTION_RESOUCE);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager widgetManager, int[] appWidgetIds) {
@@ -69,26 +71,11 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
                 }
             }
 
-            // TODO pickup point for tomorrow: How do I play queue what I need, if necessary, interrupt otherwise
-            mediaPlayer.play(context, resourcesToPlay);
+            PlaybackType widgetPlaybackType = new PreferencesManager(context).getPlaybackTypePref(widgetId);
+
+            ClickHandler clickHandler = clickHandlerFactory.createHandler(widgetPlaybackType);
+
+            clickHandler.handleClick(context, mediaPlayer);
         }
-    }
-
-    protected void handleMaxVolumePref(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(
-                context.getResources().getString(R.string.preference_repo_name),
-                Context.MODE_PRIVATE);
-
-        boolean setMaxVol = prefs.getBoolean(
-                context.getResources().getString(R.string.max_volume_preference_key), false);
-
-        if (setMaxVol) {
-            AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-        }
-    }
-
-    public static String getPlayActionStr(final Context context) {
-        return context.getResources().getString(PLAY_ACTION_RESOUCE);
     }
 }

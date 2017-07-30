@@ -13,10 +13,7 @@ import android.widget.RadioGroup;
 
 import com.flynnsam.carelesswhisperwidget.R;
 import com.flynnsam.carelesswhisperwidget.options.PlaybackType;
-import com.flynnsam.carelesswhisperwidget.provider.CarelessWhisperAppWidgetProvider;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.flynnsam.carelesswhisperwidget.preferences.PreferencesManager;
 
 public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
 
@@ -64,12 +61,7 @@ public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
 
             int widgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 
-            String preferenceKey = getResources().getString(R.string.preference_playback_option) + String.valueOf(widgetId);
-
-            getSharedPreferences(getResources().getString(R.string.preference_repo_name), MODE_PRIVATE)
-                    .edit()
-                    .putString(preferenceKey, selectedPlaybackOption)
-                    .apply();
+            new PreferencesManager(v.getContext()).putPlaybackTypePref(widgetId, PlaybackType.valueOf(selectedPlaybackOption));
 
             Intent result = new Intent();
             result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
