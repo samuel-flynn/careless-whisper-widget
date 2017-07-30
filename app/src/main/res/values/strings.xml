@@ -1,7 +1,18 @@
 <resources>
+
+    <!-- System -->
     <string name="app_name">Careless Whisper Widget</string>
     <string name="button_label">Careless Whisper</string>
+
+    <!-- Preference strings -->
     <string name="preference_repo_name">com.flynnsam.carelesswhisperwidget.PrefsMain</string>
-    <string name="max_volume_preference_key">com.flynnsam.carelesswhisperwidget.MaxVolumeOnPress</string>
-    <string name="loop_option_desc">Looping Option</string>
+    <string name="preference_playback_option">com.flynnsam.carelesswhisperwidget.PlaybackOption</string>
+
+    <!-- Event names -->
+    <string name="play_action">com.flynnsam.carelesswhisperwidget.PlayAction</string>
+
+    <!-- UI labels -->
+    <string name="playback_type_desc">Looping Option</string>
+    <string name="loop_option_desc">Loop Continuously (Press again to stop)</string>
+    <string name="one_time_option_desc">One-Time</string>
 </resources>

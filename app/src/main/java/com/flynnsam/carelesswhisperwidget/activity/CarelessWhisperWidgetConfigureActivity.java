@@ -6,20 +6,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.RadioButton;
 
 import com.flynnsam.carelesswhisperwidget.R;
 import com.flynnsam.carelesswhisperwidget.provider.CarelessWhisperAppWidgetProvider;
 
 public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
 
-    boolean maxVolumeOnClick = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_air_hown_widget_configure);
+        setContentView(R.layout.activity_careless_whisper_widget_configure);
 
         Button okButton = (Button) findViewById(R.id.okButton);
 
@@ -31,11 +29,11 @@ public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
-            CheckBox maxVolumeCheckBox = (CheckBox) findViewById(R.id.maxVolumeCheckBox);
+            RadioButton maxVolumeCheckBox = (RadioButton) findViewById(R.id.playback_radio_loop);
 
             getSharedPreferences(getResources().getString(R.string.preference_repo_name), MODE_PRIVATE)
                     .edit()
-                    .putBoolean(CarelessWhisperAppWidgetProvider.MAX_VOLUME_PREFERENCE_KEY, maxVolumeCheckBox.isChecked())
+                    .putString(CarelessWhisperAppWidgetProvider.MAX_VOLUME_PREFERENCE_KEY, maxVolumeCheckBox.isChecked())
                     .commit();
 
             Intent intent = getIntent();

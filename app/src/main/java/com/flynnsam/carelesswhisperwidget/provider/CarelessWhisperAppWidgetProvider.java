@@ -9,8 +9,8 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.widget.RemoteViews;
 
+import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 import com.flynnsam.carelesswhisperwidget.R;
-import com.flynnsam.carelesswhisperwidget.mediaplayer.MediaPlayerProvider;
 
 /**
  * The widget provider that registers the button's action and handles that action's reception.
@@ -19,9 +19,15 @@ import com.flynnsam.carelesswhisperwidget.mediaplayer.MediaPlayerProvider;
  */
 public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
-    private static final String PLAY_ACTION = "com.flynnsam.airhornwidget.PlayAction";
+    private static final String PLAY_ACTION = "com.flynnsam.carelesswhisperwidget.PlayAction";
 
-    public static final String MAX_VOLUME_PREFERENCE_KEY = "com.flynnsam.airhornwidget.MaxVolumeOnPress";
+    private static final int CW_INTRO_RESOURCE = R.raw.intro;
+
+    private static final int CW_LOOP_RESOURCE = R.raw.loop;
+
+    private static final int CW_OUTRO_RESOURCE = R.raw.outro;
+
+    public MediaPlayerProvider mediaPlayer = null;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager widgetManager, int[] appWidgetIds) {
@@ -48,7 +54,12 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
         if (PLAY_ACTION.equals(intent.getAction())) {
             handleMaxVolumePref(context);
-            MediaPlayerProvider.play(context);
+            synchronized (this) {
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayerProvider();
+                }
+            }
+            mediaPlayer.play(context);
         }
     }
 
