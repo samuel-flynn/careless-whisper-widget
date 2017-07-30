@@ -14,11 +14,15 @@ public enum PlaybackType {
 
     private int labelResId;
 
-    private PlaybackType(int labelResId) {
+    PlaybackType(int labelResId) {
         this.labelResId = labelResId;
 
     }
 
+    /**
+     * Get the UI label to display on the configuration activity for this playback option.
+     * @return The label to display
+     */
     public int getLabelResId() {
         return labelResId;
     }

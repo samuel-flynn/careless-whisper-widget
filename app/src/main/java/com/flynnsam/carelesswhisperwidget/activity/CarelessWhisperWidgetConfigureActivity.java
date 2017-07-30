@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
@@ -15,15 +16,26 @@ import com.flynnsam.carelesswhisperwidget.R;
 import com.flynnsam.carelesswhisperwidget.options.PlaybackType;
 import com.flynnsam.carelesswhisperwidget.preferences.PreferencesManager;
 
+/**
+ * The configuration class for the widget initialization activity.
+ * Created by sam on 2017-07-29.
+ */
 public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
 
-    protected String selectedPlaybackOption = null;
+    private static final String LOGGER_TAG = CarelessWhisperWidgetConfigureActivity.class.getName();
 
-    protected SparseArray<PlaybackType> playbackTypeRadioOptions = new SparseArray<PlaybackType>();
+    protected PlaybackType selectedPlaybackOption = null;
 
+    protected SparseArray<PlaybackType> playbackTypeRadioOptions = new SparseArray<>();
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(LOGGER_TAG, "Starting configure activity");
 
         setContentView(R.layout.activity_careless_whisper_widget_configure);
 
@@ -39,42 +51,68 @@ public class CarelessWhisperWidgetConfigureActivity extends AppCompatActivity {
 
             RadioButton playbackOption = new RadioButton(this);
 
-            playbackTypeRadioOptions.put(playbackOption.getId(), playbackType);
+            radioGroup.addView(playbackOption);
+
+            int radioButtonId = playbackOption.getId();
+
+            Log.d(LOGGER_TAG, String.format("Adding [%2$s] as radio button ID [%1$d]",
+                    radioButtonId, playbackType.toString()));
+
+            playbackTypeRadioOptions.put(radioButtonId, playbackType);
             playbackOption.setText(getText(playbackType.getLabelResId()));
 
 
             if (defaultOption) {
-                playbackOption.setSelected(true);
-                selectedPlaybackOption = playbackType.toString();
+                playbackOption.setChecked(true);
+                selectedPlaybackOption = playbackType;
+                defaultOption = false;
             }
-
-            radioGroup.addView(playbackOption);
         }
     }
 
-    protected class OkOnClickListener implements View.OnClickListener {
+    /**
+     * Click listener for the OK button on the configuration activity.
+     */
+    private class OkOnClickListener implements View.OnClickListener {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onClick(View v) {
 
-            Intent intent = getIntent();
+            if (selectedPlaybackOption != null) {
 
-            int widgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+                Intent intent = getIntent();
 
-            new PreferencesManager(v.getContext()).putPlaybackTypePref(widgetId, PlaybackType.valueOf(selectedPlaybackOption));
+                int widgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 
-            Intent result = new Intent();
-            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-            setResult(RESULT_OK, result);
-            finish();
+                Log.d(LOGGER_TAG, String.format("Saving preference [%2$s] for widget ID [%1$s]", widgetId, selectedPlaybackOption));
+
+                new PreferencesManager(v.getContext()).putPlaybackTypePref(widgetId, selectedPlaybackOption);
+
+                Intent result = new Intent();
+                result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+                setResult(RESULT_OK, result);
+                finish();
+            }
         }
     }
 
-    protected class PlaybackRadioCheckChangedListener implements RadioGroup.OnCheckedChangeListener {
+    /**
+     * Listener for a change in the radio buttons.
+     */
+    private class PlaybackRadioCheckChangedListener implements RadioGroup.OnCheckedChangeListener {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-            selectedPlaybackOption = playbackTypeRadioOptions.get(checkedId).toString();
+
+            Log.d(LOGGER_TAG, String.format("Radio button changed to [%1$d]", checkedId));
+
+            selectedPlaybackOption = playbackTypeRadioOptions.get(checkedId);
         }
     }
 }

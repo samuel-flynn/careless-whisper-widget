@@ -7,7 +7,8 @@ import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 import com.flynnsam.soundboardmediaplayer.OnCompletionPlayNextListener;
 
 /**
- * Created by admin on 2017-07-30.
+ * Click handler for widgets configured with the one-time option.
+ * Created by sam on 2017-07-30.
  */
 
 class OneTimeClickHandler implements ClickHandler {
@@ -18,41 +19,38 @@ class OneTimeClickHandler implements ClickHandler {
 
     private static final int CW_LOOP_SOUND_ID = R.raw.loop;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handleClick(Context context, MediaPlayerProvider mediaPlayerProvider) {
 
         Integer currentlyPlayingTrack = mediaPlayerProvider.getCurrentlyPlayingSoundId();
 
-        if (currentlyPlayingTrack != null) {
-            switchToOneTimeOrStop(context, mediaPlayerProvider, currentlyPlayingTrack);
+        if (currentlyPlayingTrack == null) {
+            mediaPlayerProvider.play(context, CW_INTRO_SOUND_ID, new OneTimePlayNextListener());
 
-        } else {
-            mediaPlayerProvider.play(context, CW_INTRO_SOUND_ID);
-            mediaPlayerProvider.setOnCompletionPlayNextListener(new LoopingPlayNextListener(currentlyPlayingTrack));
-        }
-    }
-
-    private void switchToOneTimeOrStop(Context context, MediaPlayerProvider mediaPlayerProvider, int currentlyPlayingTrack) {
-
-        if (currentlyPlayingTrack == CW_LOOP_SOUND_ID) {
-            mediaPlayerProvider.switchTrack(context, CW_ONE_TIME_SOUND_ID);
+        } else if (currentlyPlayingTrack == CW_LOOP_SOUND_ID) {
+            mediaPlayerProvider.switchTrack(context, CW_ONE_TIME_SOUND_ID, new OneTimePlayNextListener());
 
         } else {
             mediaPlayerProvider.stop();
         }
     }
 
+    /**
+     * The on-completion listener that queues the one-time track after the intro, but nothing if
+     * anything else is playing.
+     */
+    private class OneTimePlayNextListener implements OnCompletionPlayNextListener {
 
-    private class LoopingPlayNextListener implements OnCompletionPlayNextListener {
-
-        private final Integer currentlyPlayingSoundId;
-
-        public LoopingPlayNextListener(Integer currentlyPlayingSoundId) {
-            this.currentlyPlayingSoundId = currentlyPlayingSoundId;
-        }
-
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        public Integer getNextTrackResId() {
+        public Integer getNextTrackResId(MediaPlayerProvider mediaPlayerProvider) {
+
+            Integer currentlyPlayingSoundId = mediaPlayerProvider.getCurrentlyPlayingSoundId();
 
             if (currentlyPlayingSoundId == null) {
                 return CW_ONE_TIME_SOUND_ID;
