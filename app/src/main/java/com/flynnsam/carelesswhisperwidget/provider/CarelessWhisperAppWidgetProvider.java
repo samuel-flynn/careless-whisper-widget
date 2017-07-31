@@ -14,7 +14,8 @@ import com.flynnsam.carelesswhisperwidget.clickhandler.ClickHandlerFactory;
 import com.flynnsam.carelesswhisperwidget.exception.UnconfiguredWidgetException;
 import com.flynnsam.carelesswhisperwidget.options.PlaybackType;
 import com.flynnsam.carelesswhisperwidget.preferences.PreferencesManager;
-import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
+import com.flynnsam.soundboardmediaplayer.SoundboardMediaProvider;
+import com.flynnsam.soundboardmediaplayer.SoundboardMediaProviderFactory;
 
 /**
  * The widget provider that registers the button's action and handles that action's reception.
@@ -28,7 +29,7 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
     private static final ClickHandlerFactory CLICK_HANDLER_FACTORY = new ClickHandlerFactory();
 
-    private static final MediaPlayerProvider MEDIA_PLAYER_PROVIDER = new MediaPlayerProvider();
+    private static final SoundboardMediaProvider SOUNDBOARD_MEDIA_PROVIDER = SoundboardMediaProviderFactory.createSoundboardMediaProvider();
 
     /**
      * Get the play action string name
@@ -88,7 +89,7 @@ public class CarelessWhisperAppWidgetProvider extends AppWidgetProvider {
 
             ClickHandler clickHandler = CLICK_HANDLER_FACTORY.createHandler(widgetPlaybackType);
 
-            clickHandler.handleClick(context, MEDIA_PLAYER_PROVIDER);
+            clickHandler.handleClick(context, SOUNDBOARD_MEDIA_PROVIDER);
         }
     }
 }

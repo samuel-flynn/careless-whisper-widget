@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.flynnsam.carelesswhisperwidget.R;
-import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 import com.flynnsam.soundboardmediaplayer.OnCompletionPlayNextListener;
+import com.flynnsam.soundboardmediaplayer.SoundboardMediaProvider;
 
 /**
  * Click handler for widgets configured with the continuous loop option.
@@ -24,17 +24,17 @@ class LoopClickHandler implements ClickHandler {
      * {@inheritDoc}
      */
     @Override
-    public void handleClick(Context context, MediaPlayerProvider mediaPlayerProvider) {
+    public void handleClick(Context context, SoundboardMediaProvider soundboardMediaProvider) {
 
-        Integer currentlyPlayingTrack = mediaPlayerProvider.getCurrentlyPlayingSoundId();
+        Integer currentlyPlayingTrack = soundboardMediaProvider.getCurrentlyPlayingSoundId();
 
         Log.d(LOGGER_TAG, String.format("Handling loop click. Currently playing sound ID: [%1$s]", currentlyPlayingTrack));
 
         if (currentlyPlayingTrack != null) {
-            mediaPlayerProvider.stop();
+            soundboardMediaProvider.stop();
 
         } else {
-            mediaPlayerProvider.play(context, CW_INTRO_SOUND_ID, new LoopingPlayNextListener());
+            soundboardMediaProvider.play(context, CW_INTRO_SOUND_ID, new LoopingPlayNextListener());
         }
     }
 
@@ -47,7 +47,7 @@ class LoopClickHandler implements ClickHandler {
          * {@inheritDoc}
          */
         @Override
-        public Integer getNextTrackResId(MediaPlayerProvider mediaPlayerProvider) {
+        public Integer getNextTrackResId(SoundboardMediaProvider soundboardMediaProvider) {
             return CW_LOOP_SOUND_ID;
         }
     }

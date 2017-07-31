@@ -3,8 +3,8 @@ package com.flynnsam.carelesswhisperwidget.clickhandler;
 import android.content.Context;
 
 import com.flynnsam.carelesswhisperwidget.R;
-import com.flynnsam.soundboardmediaplayer.MediaPlayerProvider;
 import com.flynnsam.soundboardmediaplayer.OnCompletionPlayNextListener;
+import com.flynnsam.soundboardmediaplayer.SoundboardMediaProvider;
 
 /**
  * Click handler for widgets configured with the one-time option.
@@ -17,24 +17,19 @@ class OneTimeClickHandler implements ClickHandler {
 
     private static final int CW_ONE_TIME_SOUND_ID = R.raw.outro;
 
-    private static final int CW_LOOP_SOUND_ID = R.raw.loop;
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handleClick(Context context, MediaPlayerProvider mediaPlayerProvider) {
+    public void handleClick(Context context, SoundboardMediaProvider soundboardMediaProvider) {
 
-        Integer currentlyPlayingTrack = mediaPlayerProvider.getCurrentlyPlayingSoundId();
+        Integer currentlyPlayingTrack = soundboardMediaProvider.getCurrentlyPlayingSoundId();
 
         if (currentlyPlayingTrack == null) {
-            mediaPlayerProvider.play(context, CW_INTRO_SOUND_ID, new OneTimePlayNextListener());
-
-        } else if (currentlyPlayingTrack == CW_LOOP_SOUND_ID) {
-            mediaPlayerProvider.switchTrack(context, CW_ONE_TIME_SOUND_ID, new OneTimePlayNextListener());
+            soundboardMediaProvider.play(context, CW_INTRO_SOUND_ID, new OneTimePlayNextListener());
 
         } else {
-            mediaPlayerProvider.stop();
+            soundboardMediaProvider.stop();
         }
     }
 
@@ -48,9 +43,9 @@ class OneTimeClickHandler implements ClickHandler {
          * {@inheritDoc}
          */
         @Override
-        public Integer getNextTrackResId(MediaPlayerProvider mediaPlayerProvider) {
+        public Integer getNextTrackResId(SoundboardMediaProvider soundboardMediaProvider) {
 
-            Integer currentlyPlayingSoundId = mediaPlayerProvider.getCurrentlyPlayingSoundId();
+            Integer currentlyPlayingSoundId = soundboardMediaProvider.getCurrentlyPlayingSoundId();
 
             if (currentlyPlayingSoundId != null && currentlyPlayingSoundId == CW_INTRO_SOUND_ID) {
                 return CW_ONE_TIME_SOUND_ID;
